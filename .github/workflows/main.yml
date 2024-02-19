@@ -26,7 +26,7 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ansibleTest.yml
-          directory: /home/runner/work/ansible-action/ansible-action
+          directory: ./ansible-action/ansible/
           key: ${{secrets.SSH_PRIVATE_KEY}}
           inventory: |
             [all]
