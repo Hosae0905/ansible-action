@@ -33,9 +33,7 @@ jobs:
             43.201.77.81 ansible_ssh_user=ubuntu
 
       - name: Download Code
-        run: echo start
-        with:
-          script: |
-            sudo rm -rf ./ansible-action
-            sudo mv -f ./ansible-action/*.html /var/www/html
+        run: |
+          sudo rm -rf ./ansible-action
+          sudo mv -f ./ansible-action/*.html /var/www/html
       
