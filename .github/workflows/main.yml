@@ -1,0 +1,40 @@
+name: devops test
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest    ## 작업을 어디다가 실행할 것인지
+
+    steps:    ## 어떤 작업을 실행할 것인지
+      - name: get code from github
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SECRET }}
+          port: ${{ secrets.PORT }}
+          scripts: |
+            sudo dnf -y install centos-release-ansible-29
+            sudo sed -i -e "s/enabled=1/enabled=0/g" /etc/yum.repos.d/CentOS-SIG-ansible-29.repo
+            sudo dnf --enablerepo=centos-ansible-29 -y install ansible
+            sudo git clone https://github.com/Hosae0905/ansible-action.git
+          
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ansibleTest.yml
+          directory: ./ansible-action/ansible
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          inventory: |
+            [all]
+            43.201.77.81 ansible_ssh_user=ubuntu
+
+      - name: Download Code
+        with:
+          script: |
+            sudo rm -rf ./ansible-action
+            sudo mv -f ./ansible-action/*.html /var/www/html
+      
